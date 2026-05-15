@@ -53,7 +53,7 @@ ALL_SKILLS     = {s for skills in SKILLS_DB.values() for s in skills}
 SKILL_CATEGORY = {s: cat for cat, skills in SKILLS_DB.items() for s in skills}
 
 
-ALIASES: dict[str, str] = {
+ALIASES= {
     'react':          'react.js',
     'reactjs':        'react.js',
     'react js':       'react.js',
@@ -99,7 +99,7 @@ ALIASES: dict[str, str] = {
     'critical-thinking': 'critical thinking',
 }
 
-def read_resume(file_path: str) -> str:
+def read_resume(file_path ):
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"Resume not found: {file_path}")
@@ -109,13 +109,13 @@ def read_resume(file_path: str) -> str:
     return path.read_text(encoding='utf-8')
 
 
-def read_job_description(file_path: str) -> str:
+def read_job_description(file_path):
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"Job description not found: {file_path}")
     return path.read_text(encoding='utf-8')
 
-def preprocess_text(text: str) -> str:
+def preprocess_text(text):
     text = text.lower()
     text = re.sub(r'[^a-z0-9\s.#+]', ' ', text)   # keep . # + for c#, c++, node.js
     tokens = word_tokenize(text)
@@ -126,18 +126,18 @@ def preprocess_text(text: str) -> str:
     )
 
 
-def _apply_aliases(text: str) -> str:
+def _apply_aliases(text):
     for alias, canonical in sorted(ALIASES.items(), key=lambda x: -len(x[0])):
         text = re.sub(r'\b' + re.escape(alias) + r'\b', canonical, text)
     return text
 
 
-def extract_skills(processed_text: str, original_text: str) -> set[str]:
+def extract_skills(processed_text , original_text):
     sources = [
         _apply_aliases(processed_text),
         _apply_aliases(original_text.lower()),
     ]
-    found: set[str] = set()
+    found= set()
     for skill in ALL_SKILLS:
         pattern = r'\b' + re.escape(skill) + r'\b'
         if any(re.search(pattern, src) for src in sources):
@@ -145,14 +145,13 @@ def extract_skills(processed_text: str, original_text: str) -> set[str]:
     return found
 
 
-def skill_recall(resume_skills: set, job_skills: set) -> float:
-    """Fraction of required job skills present in the resume."""
+def skill_recall(resume_skills, job_skills):
     if not job_skills:
-        return 1.0          # no skills required → perfect match by default
+        return 1.0          
     return len(resume_skills & job_skills) / len(job_skills)
 
 
-def tfidf_similarity(text_a: str, text_b: str) -> float:
+def tfidf_similarity(text_a, text_b ):
     try:
         vect   = TfidfVectorizer()
         matrix = vect.fit_transform([text_a, text_b])
@@ -161,12 +160,11 @@ def tfidf_similarity(text_a: str, text_b: str) -> float:
         return 0.0
 
 
-def combined_score(recall: float, tfidf: float,
-                   w_recall: float = 0.65, w_tfidf: float = 0.35) -> float:
+def combined_score(recall, tfidf,w_recall= 0.65, w_tfidf= 0.35):
     return w_recall * recall + w_tfidf * tfidf
 
 
-def skills_by_category(skills: set) -> dict[str, set]:
+def skills_by_category(skills):
     breakdown: dict[str, set] = {cat: set() for cat in SKILLS_DB}
     for skill in skills:
         cat = SKILL_CATEGORY.get(skill)
@@ -175,7 +173,7 @@ def skills_by_category(skills: set) -> dict[str, set]:
     return {k: v for k, v in breakdown.items() if v}
 
 
-def analyze_resume(resume_path: str, job_description_path: str) -> dict:
+def analyze_resume(resume_path, job_description_path):
     resume_raw = read_resume(resume_path)
     job_raw    = read_job_description(job_description_path)
 
@@ -214,7 +212,7 @@ def analyze_resume(resume_path: str, job_description_path: str) -> dict:
     }
 
 
-def print_report(result: dict) -> None:
+def print_report(result):
     scores = result['scores']
     skills = result['skills']
     cats   = result['categories']
