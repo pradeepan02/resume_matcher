@@ -2,13 +2,7 @@ Looking for Python Developer
 Required Skills:
 - Python programming
 - SQL and database management
-- Django framework
 - React or similar frontend framework
-- Docker and containerization
-- AWS cloud services
-- Strong communication and teamwork skills
-- Problem solving abilities
 
 Nice to have:
 - Machine learning experience
-- Kubernetes knowledge
